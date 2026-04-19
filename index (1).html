@@ -1,0 +1,161 @@
+  <!DOCTYPE html>
+  <html lang="ar" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>golden hands ERP</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+
+  <!-- ══════════════════════════════════════════════════════════════
+      شاشة تسجيل الدخول
+  ══════════════════════════════════════════════════════════════ -->
+  <div id="login-screen" class="login-overlay">
+    <div class="login-card">
+      <div class="login-logo">
+        <span class="logo-icon">🏭</span>
+        <h1>golden hands</h1>
+        <p>نظام الإدارة المتكامل ERP</p>
+      </div>
+      <form id="login-form" onsubmit="handleLogin(event)">
+        <div class="form-group">
+          <label>اسم المستخدم</label>
+          <input type="text" id="login-username" placeholder="أدخل اسم المستخدم" required autocomplete="username" />
+        </div>
+        <div class="form-group">
+          <label>كلمة المرور</label>
+          <input type="password" id="login-password" placeholder="أدخل كلمة المرور" required autocomplete="current-password" />
+        </div>
+        <div id="login-error" class="error-msg hidden"></div>
+        <button type="submit" class="btn btn-primary btn-full" id="login-btn">
+          <span id="login-btn-text">تسجيل الدخول</span>
+          <span id="login-spinner" class="spinner hidden"></span>
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════════
+      التطبيق الرئيسي
+  ══════════════════════════════════════════════════════════════ -->
+  <div id="app" class="hidden">
+
+    <!-- الشريط الجانبي -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <span class="logo-icon">🏭</span>
+        <span class="sidebar-title">golden hands </span>
+        <button class="sidebar-close" onclick="toggleSidebar()">✕</button>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="nav-section-label">القائمة الرئيسية</div>
+        <a class="nav-item active" data-page="dashboard" onclick="navigateTo('dashboard')">
+          <span class="nav-icon">📊</span> لوحة التحكم
+        </a>
+        <a class="nav-item" data-page="orders" onclick="navigateTo('orders')">
+          <span class="nav-icon">📋</span> الأوردرات
+        </a>
+        <a class="nav-item" data-page="clients" onclick="navigateTo('clients')">
+          <span class="nav-icon">👥</span> حسابات العملاء
+        </a>
+        <a class="nav-item" data-page="invoices" onclick="navigateTo('invoices')">
+          <span class="nav-icon">🧾</span> الفواتير
+        </a>
+
+        <div class="nav-section-label">الإنتاج والمخزن</div>
+        <a class="nav-item" data-page="inventory" onclick="navigateTo('inventory')">
+          <span class="nav-icon">📦</span> المخزن
+        </a>
+        <a class="nav-item" data-page="stages" onclick="navigateTo('stages')">
+          <span class="nav-icon">⚙️</span> مراحل الإنتاج
+        </a>
+        <a class="nav-item" data-page="bom" onclick="navigateTo('bom')">
+          <span class="nav-icon">📐</span> BOM
+        </a>
+
+        <div class="nav-section-label">الموارد البشرية</div>
+        <a class="nav-item" data-page="attendance" onclick="navigateTo('attendance')">
+          <span class="nav-icon">🕐</span> الحضور والانصراف
+        </a>
+        <a class="nav-item" data-page="salaries" onclick="navigateTo('salaries')">
+          <span class="nav-icon">💰</span> المرتبات
+        </a>
+        <a class="nav-item" data-page="workerKPIs" onclick="navigateTo('workerKPIs')">
+          <span class="nav-icon">📈</span> أداء العمال
+        </a>
+
+        <div class="nav-section-label">المالية</div>
+        <a class="nav-item" data-page="accounts" onclick="navigateTo('accounts')">
+          <span class="nav-icon">📒</span> الحسابات
+        </a>
+        <a class="nav-item" data-page="purchases" onclick="navigateTo('purchases')">
+          <span class="nav-icon">🛒</span> فواتير الشراء
+        </a>
+        <a class="nav-item" data-page="profit" onclick="navigateTo('profit')">
+          <span class="nav-icon">💹</span> الأرباح
+        </a>
+
+        <!-- إدارة المستخدمين (admin فقط) -->
+        <div class="nav-section-label admin-only hidden">الإدارة</div>
+        <a class="nav-item admin-only hidden" data-page="users" onclick="navigateTo('users')">
+          <span class="nav-icon">🔐</span> إدارة المستخدمين
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="user-info">
+          <span class="nav-icon">👤</span>
+          <div>
+            <div id="sidebar-username" class="user-name">—</div>
+            <div id="sidebar-role" class="user-role">—</div>
+          </div>
+        </div>
+        <button class="btn btn-logout" onclick="handleLogout()">تسجيل الخروج</button>
+      </div>
+    </aside>
+
+    <!-- overlay لإغلاق الشريط الجانبي على الموبايل -->
+    <div class="sidebar-overlay hidden" id="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+    <!-- المحتوى الرئيسي -->
+    <main class="main-content">
+      <!-- رأس الصفحة -->
+      <header class="top-bar">
+        <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+        <h2 class="page-title" id="page-title">لوحة التحكم</h2>
+        <div class="top-bar-actions">
+          <span id="top-username" class="top-username"></span>
+        </div>
+      </header>
+
+      <!-- منطقة المحتوى -->
+      <div class="content-area" id="content-area">
+        <!-- يُحقن المحتوى ديناميكياً -->
+      </div>
+    </main>
+
+  </div><!-- /app -->
+
+  <!-- ══════════════════════════════════════════════════════════════
+      Modal عام
+  ══════════════════════════════════════════════════════════════ -->
+  <div id="modal-overlay" class="modal-overlay hidden" onclick="closeModal()">
+    <div class="modal-card" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <h3 id="modal-title">عنوان</h3>
+        <button class="modal-close" onclick="closeModal()">✕</button>
+      </div>
+      <div class="modal-body" id="modal-body">
+        <!-- محتوى الـ modal -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast للإشعارات -->
+  <div id="toast-container"></div>
+
+  <script src="app.js"></script>
+  </body>
+  </html>
