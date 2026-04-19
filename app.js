@@ -6,7 +6,7 @@
 // ── إعداد الـ API ────────────────────────────────────────────
 // ⚠️ بعد نشر الـ Apps Script، ضع الرابط هنا:
 const API_URL = "https://script.google.com/macros/s/AKfycbxEs4n3fnHEJNDRXEnhNl8Q3BeHF1ST8kAAJTbBIBv2gflIBy67LduL-vUumil3BqEUfw/exec";
-const API_KEY = "GH_FACTORY_2024_SECRET"; // نفس المفتاح في Code.gs
+const API_KEY = "GH_FACTORY_2026_X9K2L"; // نفس المفتاح في Code.gs
 
 // ── حالة التطبيق ─────────────────────────────────────────────
 let currentUser  = null;  // المستخدم الحالي
