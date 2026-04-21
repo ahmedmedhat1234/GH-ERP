@@ -37,6 +37,10 @@ function doGet(e) {
 
   // التحقق من مفتاح API
   if (!isValidApiKey(extractApiKey(params))) {
+  const params = (e && e.parameter) ? e.parameter : {};
+
+  // التحقق من مفتاح API
+  if (!isValidApiKey(params.apiKey)) {
     return jsonResponse({ success: false, error: "مفتاح API غير صحيح" }, 403);
   }
 
@@ -74,6 +78,7 @@ function doPost(e) {
 
     // التحقق من مفتاح API
     if (!isValidApiKey(extractApiKey(body))) {
+    if (!isValidApiKey(body.apiKey)) {
       return jsonResponse({ success: false, error: "مفتاح API غير صحيح" }, 403);
     }
 
