@@ -26,6 +26,17 @@ const SHEETS = {
 
 // ── نقطة الدخول GET ───────────────────────────────────────────
 function doGet(e) {
+  if (!e || !e.parameter) {
+    return jsonResponse({
+      success: false,
+      error: "طلب GET غير صالح. شغّل الـ Web App عبر الرابط وليس من زر Run داخل المحرر."
+    }, 400);
+  }
+
+  const params = e.parameter || {};
+
+  // التحقق من مفتاح API
+  if (!isValidApiKey(extractApiKey(params))) {
   const params = (e && e.parameter) ? e.parameter : {};
 
   // التحقق من مفتاح API
@@ -49,6 +60,13 @@ function doGet(e) {
 
 // ── نقطة الدخول POST ──────────────────────────────────────────
 function doPost(e) {
+  if (!e) {
+    return jsonResponse({
+      success: false,
+      error: "طلب POST غير صالح. شغّل الـ Web App عبر الرابط وليس من زر Run داخل المحرر."
+    }, 400);
+  }
+
   try {
     const parsed = parseRequestPayload(e);
 
@@ -59,6 +77,7 @@ function doPost(e) {
     const body = parsed.data || {};
 
     // التحقق من مفتاح API
+    if (!isValidApiKey(extractApiKey(body))) {
     if (!isValidApiKey(body.apiKey)) {
       return jsonResponse({ success: false, error: "مفتاح API غير صحيح" }, 403);
     }
@@ -127,6 +146,18 @@ function parseRequestPayload(e) {
         return { success: false, error: "JSON يجب أن يكون كائن object" };
       }
 
+      // بعض العملاء يرسلون payload كنص JSON داخل حقل payload
+      if (typeof parsed.payload === "string") {
+        try {
+          const nested = JSON.parse(parsed.payload);
+          if (nested && typeof nested === "object" && !Array.isArray(nested)) {
+            return { success: true, data: nested };
+          }
+        } catch (_) {
+          // تجاهل وكمّل بالـ parsed العادي
+        }
+      }
+
       return { success: true, data: parsed };
     } catch (err) {
       return { success: false, error: "JSON غير صالح" };
@@ -143,6 +174,11 @@ function parseRequestPayload(e) {
 
 function isValidApiKey(candidate) {
   return String(candidate || "").trim() === String(API_KEY).trim();
+}
+
+function extractApiKey(obj) {
+  if (!obj || typeof obj !== "object") return "";
+  return obj.apiKey || obj.api_key || obj.key || "";
 }
 
 // ================================================================
