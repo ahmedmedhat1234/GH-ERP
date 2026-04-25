@@ -1,161 +1,1260 @@
-  <!DOCTYPE html>
-  <html lang="ar" dir="rtl">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>golden hands ERP</title>
-    <link rel="stylesheet" href="style.css" />
-  </head>
-  <body>
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Golden Hands Factory - ERP</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #c9a227;
+    --gold-light: #e8c84a;
+    --gold-dark: #9a7a10;
+    --dark: #0f0e0c;
+    --dark2: #1a1814;
+    --dark3: #252219;
+    --dark4: #2f2c20;
+    --text: #f5f0e0;
+    --text-muted: #9a9280;
+    --danger: #e05555;
+    --success: #4caf7d;
+    --warning: #e8a030;
+    --border: rgba(201,162,39,0.2);
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    font-family: 'Tajawal', sans-serif;
+    background: var(--dark);
+    color: var(--text);
+    min-height: 100vh;
+    direction: rtl;
+  }
 
-  <!-- ══════════════════════════════════════════════════════════════
-      شاشة تسجيل الدخول
-  ══════════════════════════════════════════════════════════════ -->
-  <div id="login-screen" class="login-overlay">
-    <div class="login-card">
-      <div class="login-logo">
-        <span class="logo-icon">🏭</span>
-        <h1>golden hands</h1>
-        <p>نظام الإدارة المتكامل ERP</p>
+  /* Sidebar */
+  .sidebar {
+    position: fixed; top:0; right:0; width:240px; height:100vh;
+    background: var(--dark2);
+    border-left: 1px solid var(--border);
+    display: flex; flex-direction: column;
+    z-index: 100;
+    overflow-y: auto;
+  }
+  .logo {
+    padding: 24px 20px;
+    border-bottom: 1px solid var(--border);
+  }
+  .logo h1 {
+    font-size: 1.1rem; font-weight: 800; color: var(--gold);
+    letter-spacing: 0.5px;
+  }
+  .logo p { font-size: 0.7rem; color: var(--text-muted); margin-top: 3px; }
+  .logo-icon {
+    width: 40px; height: 40px; background: linear-gradient(135deg, var(--gold-dark), var(--gold));
+    border-radius: 10px; display: flex; align-items: center; justify-content: center;
+    font-size: 1.2rem; margin-bottom: 10px;
+  }
+  nav { flex: 1; padding: 12px 0; }
+  .nav-section { padding: 8px 16px 4px; font-size: 0.65rem; color: var(--text-muted); letter-spacing: 1px; text-transform: uppercase; }
+  .nav-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 20px; cursor: pointer; transition: all 0.2s;
+    font-size: 0.85rem; color: var(--text-muted); border-right: 3px solid transparent;
+  }
+  .nav-item:hover { background: var(--dark3); color: var(--text); }
+  .nav-item.active { background: var(--dark3); color: var(--gold); border-right-color: var(--gold); }
+  .nav-item .icon { font-size: 1rem; width: 20px; text-align: center; }
+
+  /* Main content */
+  .main { margin-right: 240px; padding: 24px; min-height: 100vh; }
+  .page { display: none; }
+  .page.active { display: block; }
+
+  /* Header */
+  .page-header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 28px;
+  }
+  .page-title { font-size: 1.6rem; font-weight: 700; }
+  .page-title span { color: var(--gold); }
+
+  /* KPI Cards */
+  .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin-bottom: 28px; }
+  .kpi-card {
+    background: var(--dark2); border: 1px solid var(--border);
+    border-radius: 12px; padding: 20px;
+    position: relative; overflow: hidden;
+    transition: transform 0.2s, border-color 0.2s;
+  }
+  .kpi-card:hover { transform: translateY(-2px); border-color: var(--gold-dark); }
+  .kpi-card::before {
+    content: ''; position: absolute; top:0; right:0;
+    width: 3px; height: 100%; background: var(--gold);
+  }
+  .kpi-card.danger::before { background: var(--danger); }
+  .kpi-card.success::before { background: var(--success); }
+  .kpi-card.warning::before { background: var(--warning); }
+  .kpi-label { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 8px; }
+  .kpi-value { font-size: 1.8rem; font-weight: 800; color: var(--gold); }
+  .kpi-card.danger .kpi-value { color: var(--danger); }
+  .kpi-card.success .kpi-value { color: var(--success); }
+  .kpi-card.warning .kpi-value { color: var(--warning); }
+  .kpi-sub { font-size: 0.7rem; color: var(--text-muted); margin-top: 4px; }
+
+  /* Tables */
+  .table-card {
+    background: var(--dark2); border: 1px solid var(--border);
+    border-radius: 12px; overflow: hidden; margin-bottom: 20px;
+  }
+  .table-header {
+    padding: 16px 20px; border-bottom: 1px solid var(--border);
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .table-title { font-size: 1rem; font-weight: 600; }
+  .table-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; }
+  th {
+    background: var(--dark3); padding: 12px 16px; text-align: right;
+    font-size: 0.75rem; color: var(--text-muted); font-weight: 600;
+    letter-spacing: 0.5px; white-space: nowrap;
+  }
+  td {
+    padding: 12px 16px; border-bottom: 1px solid rgba(201,162,39,0.07);
+    font-size: 0.85rem; white-space: nowrap;
+  }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: var(--dark3); }
+
+  /* Badges */
+  .badge {
+    display: inline-block; padding: 3px 10px; border-radius: 20px;
+    font-size: 0.7rem; font-weight: 600;
+  }
+  .badge-inprogress { background: rgba(201,162,39,0.15); color: var(--gold); }
+  .badge-done { background: rgba(76,175,125,0.15); color: var(--success); }
+  .badge-low { background: rgba(224,85,85,0.15); color: var(--danger); }
+  .badge-ok { background: rgba(76,175,125,0.15); color: var(--success); }
+
+  /* Buttons */
+  .btn {
+    padding: 8px 18px; border-radius: 8px; border: none; cursor: pointer;
+    font-family: 'Tajawal', sans-serif; font-size: 0.85rem; font-weight: 600;
+    transition: all 0.2s;
+  }
+  .btn-gold { background: var(--gold); color: var(--dark); }
+  .btn-gold:hover { background: var(--gold-light); }
+  .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text-muted); }
+  .btn-outline:hover { border-color: var(--gold); color: var(--gold); }
+  .btn-danger { background: var(--danger); color: white; }
+  .btn-sm { padding: 5px 12px; font-size: 0.75rem; }
+
+  /* Modal */
+  .modal-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.7); z-index: 1000;
+    align-items: center; justify-content: center;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: var(--dark2); border: 1px solid var(--border);
+    border-radius: 16px; padding: 28px; width: 90%; max-width: 520px;
+    max-height: 90vh; overflow-y: auto;
+  }
+  .modal h3 { font-size: 1.2rem; margin-bottom: 20px; color: var(--gold); }
+  .form-group { margin-bottom: 16px; }
+  .form-group label { display: block; font-size: 0.8rem; color: var(--text-muted); margin-bottom: 6px; }
+  .form-group input, .form-group select, .form-group textarea {
+    width: 100%; padding: 10px 14px;
+    background: var(--dark3); border: 1px solid var(--border);
+    border-radius: 8px; color: var(--text); font-family: 'Tajawal', sans-serif; font-size: 0.9rem;
+  }
+  .form-group input:focus, .form-group select:focus {
+    outline: none; border-color: var(--gold);
+  }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .modal-footer { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; }
+
+  /* Search / filter bar */
+  .toolbar { display: flex; gap: 10px; align-items: center; }
+  .search-input {
+    padding: 8px 14px; background: var(--dark3);
+    border: 1px solid var(--border); border-radius: 8px;
+    color: var(--text); font-family: 'Tajawal', sans-serif; font-size: 0.85rem;
+    width: 220px;
+  }
+  .search-input:focus { outline: none; border-color: var(--gold); }
+
+  /* Progress bar */
+  .progress { background: var(--dark4); border-radius: 4px; height: 6px; overflow: hidden; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, var(--gold-dark), var(--gold)); border-radius: 4px; }
+
+  /* Summary box */
+  .summary-row {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 20px;
+  }
+  .summary-box {
+    background: var(--dark3); border-radius: 10px; padding: 16px; text-align: center;
+  }
+  .summary-box .val { font-size: 1.4rem; font-weight: 800; }
+  .summary-box .lbl { font-size: 0.72rem; color: var(--text-muted); margin-top: 4px; }
+
+  /* Alerts */
+  .alert {
+    padding: 12px 16px; border-radius: 8px; margin-bottom: 12px; font-size: 0.85rem;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .alert-warning { background: rgba(232,160,48,0.12); border: 1px solid rgba(232,160,48,0.3); color: var(--warning); }
+  .alert-danger { background: rgba(224,85,85,0.12); border: 1px solid rgba(224,85,85,0.3); color: var(--danger); }
+
+  /* Empty state */
+  .empty { text-align: center; padding: 40px; color: var(--text-muted); font-size: 0.9rem; }
+  .empty-icon { font-size: 2.5rem; margin-bottom: 10px; }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .sidebar { width: 200px; }
+    .main { margin-right: 200px; padding: 16px; }
+    .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+    .form-row { grid-template-columns: 1fr; }
+  }
+
+  /* Toast */
+  .toast {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+    background: var(--dark3); border: 1px solid var(--gold);
+    color: var(--gold); padding: 10px 22px; border-radius: 30px;
+    font-size: 0.85rem; font-weight: 600; z-index: 9999;
+    opacity: 0; transition: opacity 0.3s; pointer-events: none;
+  }
+  .toast.show { opacity: 1; }
+
+  .gold { color: var(--gold); }
+  .danger { color: var(--danger); }
+  .success { color: var(--success); }
+  .muted { color: var(--text-muted); }
+</style>
+</head>
+<body>
+
+<!-- Sidebar -->
+<aside class="sidebar">
+  <div class="logo">
+    <div class="logo-icon">🏭</div>
+    <h1>Golden Hands</h1>
+    <p>نظام إدارة المصنع</p>
+  </div>
+  <nav>
+    <div class="nav-section">الرئيسية</div>
+    <div class="nav-item active" onclick="showPage('dashboard')">
+      <span class="icon">📊</span> لوحة التحكم
+    </div>
+    <div class="nav-section">الإنتاج</div>
+    <div class="nav-item" onclick="showPage('orders')">
+      <span class="icon">📋</span> الأوردرات
+    </div>
+    <div class="nav-item" onclick="showPage('stages')">
+      <span class="icon">🔄</span> مراحل الإنتاج
+    </div>
+    <div class="nav-section">المالية</div>
+    <div class="nav-item" onclick="showPage('clients')">
+      <span class="icon">👥</span> حسابات العملاء
+    </div>
+    <div class="nav-item" onclick="showPage('invoices')">
+      <span class="icon">🧾</span> الفواتير
+    </div>
+    <div class="nav-item" onclick="showPage('purchases')">
+      <span class="icon">🛒</span> فواتير الشراء
+    </div>
+    <div class="nav-item" onclick="showPage('profits')">
+      <span class="icon">💰</span> الأرباح
+    </div>
+    <div class="nav-section">الموارد البشرية</div>
+    <div class="nav-item" onclick="showPage('salaries')">
+      <span class="icon">💳</span> المرتبات
+    </div>
+    <div class="nav-item" onclick="showPage('attendance')">
+      <span class="icon">🕐</span> الحضور والانصراف
+    </div>
+    <div class="nav-item" onclick="showPage('kpis')">
+      <span class="icon">🏆</span> KPIs العمال
+    </div>
+    <div class="nav-section">المخزن</div>
+    <div class="nav-item" onclick="showPage('inventory')">
+      <span class="icon">📦</span> المخزن
+    </div>
+    <div class="nav-item" onclick="showPage('bom')">
+      <span class="icon">📐</span> BOM الموديلات
+    </div>
+    <div class="nav-section">الأرشيف</div>
+    <div class="nav-item" onclick="showPage('archive')">
+      <span class="icon">🗂️</span> الأرشيف
+    </div>
+  </nav>
+</aside>
+
+<!-- Main -->
+<main class="main">
+
+  <!-- DASHBOARD -->
+  <div class="page active" id="page-dashboard">
+    <div class="page-header">
+      <div class="page-title">لوحة <span>التحكم</span></div>
+      <div style="font-size:0.8rem; color:var(--text-muted)" id="today-date"></div>
+    </div>
+    <div class="kpi-grid" id="dashboard-kpis"></div>
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px;">
+      <div class="table-card">
+        <div class="table-header"><span class="table-title">آخر الأوردرات</span></div>
+        <div class="table-wrap"><table id="dash-orders-table">
+          <thead><tr><th>رقم</th><th>العميل</th><th>الكمية</th><th>الحالة</th></tr></thead>
+          <tbody></tbody>
+        </table></div>
       </div>
-      <form id="login-form" onsubmit="handleLogin(event)">
-        <div class="form-group">
-          <label>اسم المستخدم</label>
-          <input type="text" id="login-username" placeholder="أدخل اسم المستخدم" required autocomplete="username" />
-        </div>
-        <div class="form-group">
-          <label>كلمة المرور</label>
-          <input type="password" id="login-password" placeholder="أدخل كلمة المرور" required autocomplete="current-password" />
-        </div>
-        <div id="login-error" class="error-msg hidden"></div>
-        <button type="submit" class="btn btn-primary btn-full" id="login-btn">
-          <span id="login-btn-text">تسجيل الدخول</span>
-          <span id="login-spinner" class="spinner hidden"></span>
-        </button>
-      </form>
+      <div class="table-card">
+        <div class="table-header"><span class="table-title">تنبيهات المخزن</span></div>
+        <div id="inventory-alerts" style="padding:16px;"></div>
+      </div>
     </div>
   </div>
 
-  <!-- ══════════════════════════════════════════════════════════════
-      التطبيق الرئيسي
-  ══════════════════════════════════════════════════════════════ -->
-  <div id="app" class="hidden">
-
-    <!-- الشريط الجانبي -->
-    <aside class="sidebar" id="sidebar">
-      <div class="sidebar-header">
-        <span class="logo-icon">🏭</span>
-        <span class="sidebar-title">golden hands </span>
-        <button class="sidebar-close" onclick="toggleSidebar()">✕</button>
+  <!-- ORDERS -->
+  <div class="page" id="page-orders">
+    <div class="page-header">
+      <div class="page-title">إدارة <span>الأوردرات</span></div>
+      <div class="toolbar">
+        <input class="search-input" placeholder="بحث..." oninput="filterTable('orders-tbody', this.value)">
+        <button class="btn btn-gold" onclick="openModal('order-modal')">+ أوردر جديد</button>
       </div>
-
-      <nav class="sidebar-nav">
-        <div class="nav-section-label">القائمة الرئيسية</div>
-        <a class="nav-item active" data-page="dashboard" onclick="navigateTo('dashboard')">
-          <span class="nav-icon">📊</span> لوحة التحكم
-        </a>
-        <a class="nav-item" data-page="orders" onclick="navigateTo('orders')">
-          <span class="nav-icon">📋</span> الأوردرات
-        </a>
-        <a class="nav-item" data-page="clients" onclick="navigateTo('clients')">
-          <span class="nav-icon">👥</span> حسابات العملاء
-        </a>
-        <a class="nav-item" data-page="invoices" onclick="navigateTo('invoices')">
-          <span class="nav-icon">🧾</span> الفواتير
-        </a>
-
-        <div class="nav-section-label">الإنتاج والمخزن</div>
-        <a class="nav-item" data-page="inventory" onclick="navigateTo('inventory')">
-          <span class="nav-icon">📦</span> المخزن
-        </a>
-        <a class="nav-item" data-page="stages" onclick="navigateTo('stages')">
-          <span class="nav-icon">⚙️</span> مراحل الإنتاج
-        </a>
-        <a class="nav-item" data-page="bom" onclick="navigateTo('bom')">
-          <span class="nav-icon">📐</span> BOM
-        </a>
-
-        <div class="nav-section-label">الموارد البشرية</div>
-        <a class="nav-item" data-page="attendance" onclick="navigateTo('attendance')">
-          <span class="nav-icon">🕐</span> الحضور والانصراف
-        </a>
-        <a class="nav-item" data-page="salaries" onclick="navigateTo('salaries')">
-          <span class="nav-icon">💰</span> المرتبات
-        </a>
-        <a class="nav-item" data-page="workerKPIs" onclick="navigateTo('workerKPIs')">
-          <span class="nav-icon">📈</span> أداء العمال
-        </a>
-
-        <div class="nav-section-label">المالية</div>
-        <a class="nav-item" data-page="accounts" onclick="navigateTo('accounts')">
-          <span class="nav-icon">📒</span> الحسابات
-        </a>
-        <a class="nav-item" data-page="purchases" onclick="navigateTo('purchases')">
-          <span class="nav-icon">🛒</span> فواتير الشراء
-        </a>
-        <a class="nav-item" data-page="profit" onclick="navigateTo('profit')">
-          <span class="nav-icon">💹</span> الأرباح
-        </a>
-
-        <!-- إدارة المستخدمين (admin فقط) -->
-        <div class="nav-section-label admin-only hidden">الإدارة</div>
-        <a class="nav-item admin-only hidden" data-page="users" onclick="navigateTo('users')">
-          <span class="nav-icon">🔐</span> إدارة المستخدمين
-        </a>
-      </nav>
-
-      <div class="sidebar-footer">
-        <div class="user-info">
-          <span class="nav-icon">👤</span>
-          <div>
-            <div id="sidebar-username" class="user-name">—</div>
-            <div id="sidebar-role" class="user-role">—</div>
-          </div>
-        </div>
-        <button class="btn btn-logout" onclick="handleLogout()">تسجيل الخروج</button>
-      </div>
-    </aside>
-
-    <!-- overlay لإغلاق الشريط الجانبي على الموبايل -->
-    <div class="sidebar-overlay hidden" id="sidebar-overlay" onclick="toggleSidebar()"></div>
-
-    <!-- المحتوى الرئيسي -->
-    <main class="main-content">
-      <!-- رأس الصفحة -->
-      <header class="top-bar">
-        <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
-        <h2 class="page-title" id="page-title">لوحة التحكم</h2>
-        <div class="top-bar-actions">
-          <span id="top-username" class="top-username"></span>
-        </div>
-      </header>
-
-      <!-- منطقة المحتوى -->
-      <div class="content-area" id="content-area">
-        <!-- يُحقن المحتوى ديناميكياً -->
-      </div>
-    </main>
-
-  </div><!-- /app -->
-
-  <!-- ══════════════════════════════════════════════════════════════
-      Modal عام
-  ══════════════════════════════════════════════════════════════ -->
-  <div id="modal-overlay" class="modal-overlay hidden" onclick="closeModal()">
-    <div class="modal-card" onclick="event.stopPropagation()">
-      <div class="modal-header">
-        <h3 id="modal-title">عنوان</h3>
-        <button class="modal-close" onclick="closeModal()">✕</button>
-      </div>
-      <div class="modal-body" id="modal-body">
-        <!-- محتوى الـ modal -->
-      </div>
+    </div>
+    <div class="table-card">
+      <div class="table-wrap"><table>
+        <thead><tr><th>رقم</th><th>العميل</th><th>الموديل</th><th>نوع التشغيل</th><th>سعر القطعة</th><th>الكمية</th><th>الإجمالي</th><th>تاريخ الاستلام</th><th>المستلم</th><th>المتبقي</th><th>الإنجاز %</th><th>الحالة</th><th>إجراء</th></tr></thead>
+        <tbody id="orders-tbody"></tbody>
+      </table></div>
     </div>
   </div>
 
-  <!-- Toast للإشعارات -->
-  <div id="toast-container"></div>
+  <!-- STAGES -->
+  <div class="page" id="page-stages">
+    <div class="page-header">
+      <div class="page-title">مراحل <span>الإنتاج</span></div>
+      <button class="btn btn-gold" onclick="openModal('stage-modal')">+ مرحلة جديدة</button>
+    </div>
+    <div class="table-card">
+      <div class="table-wrap"><table>
+        <thead><tr><th>رقم الأوردر</th><th>المرحلة</th><th>الكمية الكلية</th><th>المنجز</th><th>المتبقي</th><th>التقدم</th><th>إجراء</th></tr></thead>
+        <tbody id="stages-tbody"></tbody>
+      </table></div>
+    </div>
+  </div>
 
-  <script src="app.js"></script>
-  </body>
-  </html>
+  <!-- CLIENTS -->
+  <div class="page" id="page-clients">
+    <div class="page-header">
+      <div class="page-title">حسابات <span>العملاء</span></div>
+      <button class="btn btn-gold" onclick="openModal('client-modal')">+ عميل جديد</button>
+    </div>
+    <div class="table-card">
+      <div class="table-wrap"><table>
+        <thead><tr><th>اسم العميل</th><th>عدد الأوردرات</th><th>إجمالي القطع</th><th>المستحقات</th><th>المدفوع</th><th>المتبقي</th><th>صافي الربح</th><th>إجراء</th></tr></thead>
+        <tbody id="clients-tbody"></tbody>
+      </table></div>
+    </div>
+  </div>
+
+  <!-- INVOICES -->
+  <div class="page" id="page-invoices">
+    <div class="page-header">
+      <div class="page-title">فواتير <span>البيع</span></div>
+      <button class="btn btn-gold" onclick="openModal('invoice-modal')">+ فاتورة جديدة</button>
+    </div>
+    <div class="table-card">
+      <div class="table-wrap"><table>
+        <thead><tr><th>رقم الفاتورة</th><th>العميل</th><th>التاريخ</th><th>رقم الأوردر</th><th>الكمية</th><th>السعر</th><th>الإجمالي</th><th>إجراء</th></tr></thead>
+        <tbody id="invoices-tbody"></tbody>
+      </table></div>
+    </div>
+  </div>
+
+  <!-- PURCHASES -->
+  <div class="page" id="page-purchases">
+    <div class="page-header">
+      <div class="page-title">فواتير <span>الشراء</span></div>
+      <button class="btn btn-gold" onclick="openModal('purchase-modal')">+ فاتورة شراء</button>
+    </div>
+    <div class="table-card">
+      <div class="table-wrap"><table>
+        <thead><tr><th>رقم أمر الشراء</th><th>المورد</th><th>الصنف</th><th>الكمية</th><th>سعر الوحدة</th><th>الإجمالي</th><th>المدفوع</th><th>المتبقي</th><th>إجراء</th></tr></thead>
+        <tbody id="purchases-tbody"></tbody>
+      </table></div>
+    </div>
+  </div>
+
+  <!-- PROFITS -->
+  <div class="page" id="page-profits">
+    <div class="page-header">
+      <div class="page-title">تقرير <span>الأرباح</span></div>
+    </div>
+    <div class="summary-row" id="profit-summary"></div>
+    <div class="table-card">
+      <div class="table-wrap"><table>
+        <thead><tr><th>رقم الأوردر/العميل</th><th>إجمالي الإيراد</th><th>تكلفة العمالة</th><th>تكلفة الخامات</th><th>مصاريف تشغيل</th><th>صافي الربح</th><th>إجراء</th></tr></thead>
+        <tbody id="profits-tbody"></tbody>
+      </table></div>
+    </div>
+  </div>
+
+  <!-- SALARIES -->
+  <div class="page" id="page-salaries">
+    <div class="page-header">
+      <div class="page-title">كشف <span>المرتبات</span></div>
+      <button class="btn btn-gold" onclick="openModal('salary-modal')">+ عامل جديد</button>
+    </div>
+    <div class="table-card">
+      <div class="table-wrap"><table>
+        <thead><tr><th>كود</th><th>الاسم</th><th>الراتب الأساسي</th><th>أيام الغياب</th><th>خصم الغياب</th><th>حوافز</th><th>خصومات</th><th>سلف</th><th>ساعات سهر</th><th>أجر السهر</th><th>صافي الراتب</th><th>إجراء</th></tr></thead>
+        <tbody id="salaries-tbody"></tbody>
+      </table></div>
+    </div>
+  </div>
+
+  <!-- ATTENDANCE -->
+  <div class="page" id="page-attendance">
+    <div class="page-header">
+      <div class="page-title">الحضور <span>والانصراف</span></div>
+      <button class="btn btn-gold" onclick="openModal('attendance-modal')">+ تسجيل حضور</button>
+    </div>
+    <div class="table-card">
+      <div class="table-wrap"><table>
+        <thead><tr><th>اسم العامل</th><th>التاريخ</th><th>وقت الحضور</th><th>وقت الانصراف</th><th>ساعات العمل</th><th>ساعات إضافية</th><th>إجراء</th></tr></thead>
+        <tbody id="attendance-tbody"></tbody>
+      </table></div>
+    </div>
+  </div>
+
+  <!-- KPIs -->
+  <div class="page" id="page-kpis">
+    <div class="page-header">
+      <div class="page-title">KPIs <span>العمال</span></div>
+    </div>
+    <div class="table-card">
+      <div class="table-wrap"><table>
+        <thead><tr><th>كود</th><th>الاسم</th><th>إجمالي ساعات العمل</th><th>إجمالي السهر</th><th>أيام الغياب</th><th>الإنتاجية (قطع)</th><th>التقييم</th></tr></thead>
+        <tbody id="kpis-tbody"></tbody>
+      </table></div>
+    </div>
+  </div>
+
+  <!-- INVENTORY -->
+  <div class="page" id="page-inventory">
+    <div class="page-header">
+      <div class="page-title">إدارة <span>المخزن</span></div>
+      <button class="btn btn-gold" onclick="openModal('inventory-modal')">+ صنف جديد</button>
+    </div>
+    <div class="table-card">
+      <div class="table-wrap"><table>
+        <thead><tr><th>كود</th><th>الصنف</th><th>رصيد أول المدة</th><th>المشتريات</th><th>المنصرف للإنتاج</th><th>الرصيد الحالي</th><th>الحالة</th><th>إجراء</th></tr></thead>
+        <tbody id="inventory-tbody"></tbody>
+      </table></div>
+    </div>
+  </div>
+
+  <!-- BOM -->
+  <div class="page" id="page-bom">
+    <div class="page-header">
+      <div class="page-title">قائمة مواد <span>الموديلات</span></div>
+      <button class="btn btn-gold" onclick="openModal('bom-modal')">+ موديل جديد</button>
+    </div>
+    <div class="table-card">
+      <div class="table-wrap"><table>
+        <thead><tr><th>كود الموديل</th><th>الاسم</th><th>الخامة الأساسية</th><th>الكمية/قطعة</th><th>الوحدة</th><th>إكسسوارات</th><th>كمية الإكسسوار</th><th>إجراء</th></tr></thead>
+        <tbody id="bom-tbody"></tbody>
+      </table></div>
+    </div>
+  </div>
+
+  <!-- ARCHIVE -->
+  <div class="page" id="page-archive">
+    <div class="page-header">
+      <div class="page-title">الأوردرات <span>المؤرشفة</span></div>
+    </div>
+    <div class="table-card">
+      <div class="table-wrap"><table>
+        <thead><tr><th>رقم</th><th>العميل</th><th>الموديل</th><th>نوع التشغيل</th><th>سعر القطعة</th><th>الكمية</th><th>الإجمالي</th><th>الاستلام</th><th>المستلم</th><th>المسلم</th><th>المتبقي</th><th>الإنجاز %</th><th>الحالة</th></tr></thead>
+        <tbody id="archive-tbody"></tbody>
+      </table></div>
+    </div>
+  </div>
+
+</main>
+
+<!-- ===== MODALS ===== -->
+
+<!-- Order Modal -->
+<div class="modal-overlay" id="order-modal">
+  <div class="modal">
+    <h3 id="order-modal-title">أوردر جديد</h3>
+    <input type="hidden" id="order-edit-idx" value="">
+    <div class="form-row">
+      <div class="form-group"><label>اسم العميل</label><input id="o-client" placeholder="اسم العميل"></div>
+      <div class="form-group"><label>كود الموديل</label><input id="o-model" placeholder="كود الموديل" type="number"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>نوع التشغيل</label><input id="o-type" placeholder="نوع التشغيل"></div>
+      <div class="form-group"><label>سعر القطعة</label><input id="o-price" type="number" placeholder="0"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>الكمية المطلوبة</label><input id="o-qty" type="number" placeholder="0"></div>
+      <div class="form-group"><label>تاريخ الاستلام</label><input id="o-date" type="date"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>الكمية المستلمة</label><input id="o-received" type="number" placeholder="0"></div>
+      <div class="form-group"><label>الكمية المسلمة</label><input id="o-delivered" type="number" placeholder="0"></div>
+    </div>
+    <div class="form-group">
+      <label>الحالة</label>
+      <select id="o-status">
+        <option>قيد التنفيذ</option>
+        <option>مكتمل</option>
+        <option>ملغي</option>
+      </select>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('order-modal')">إلغاء</button>
+      <button class="btn btn-gold" onclick="saveOrder()">حفظ</button>
+    </div>
+  </div>
+</div>
+
+<!-- Stage Modal -->
+<div class="modal-overlay" id="stage-modal">
+  <div class="modal">
+    <h3>مرحلة إنتاج جديدة</h3>
+    <input type="hidden" id="stage-edit-idx" value="">
+    <div class="form-row">
+      <div class="form-group"><label>رقم الأوردر</label><input id="s-order" type="number"></div>
+      <div class="form-group"><label>المرحلة</label><input id="s-stage" placeholder="قص / خياطة / تشطيب..."></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>الكمية الكلية</label><input id="s-total" type="number"></div>
+      <div class="form-group"><label>الكمية المنجزة</label><input id="s-done" type="number"></div>
+    </div>
+    <div class="form-group"><label>زمن التنفيذ المتوقع</label><input id="s-time" placeholder="مثل: 3 أيام"></div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('stage-modal')">إلغاء</button>
+      <button class="btn btn-gold" onclick="saveStage()">حفظ</button>
+    </div>
+  </div>
+</div>
+
+<!-- Client Modal -->
+<div class="modal-overlay" id="client-modal">
+  <div class="modal">
+    <h3 id="client-modal-title">عميل جديد</h3>
+    <input type="hidden" id="client-edit-idx" value="">
+    <div class="form-row">
+      <div class="form-group"><label>اسم العميل</label><input id="c-name" placeholder="اسم العميل"></div>
+      <div class="form-group"><label>المبلغ المدفوع</label><input id="c-paid" type="number" placeholder="0"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('client-modal')">إلغاء</button>
+      <button class="btn btn-gold" onclick="saveClient()">حفظ</button>
+    </div>
+  </div>
+</div>
+
+<!-- Invoice Modal -->
+<div class="modal-overlay" id="invoice-modal">
+  <div class="modal">
+    <h3>فاتورة بيع جديدة</h3>
+    <input type="hidden" id="inv-edit-idx" value="">
+    <div class="form-row">
+      <div class="form-group"><label>اسم العميل</label><input id="inv-client" placeholder="اسم العميل"></div>
+      <div class="form-group"><label>رقم الأوردر</label><input id="inv-order" type="number"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>التاريخ</label><input id="inv-date" type="date"></div>
+      <div class="form-group"><label>الكمية</label><input id="inv-qty" type="number"></div>
+    </div>
+    <div class="form-group"><label>السعر</label><input id="inv-price" type="number"></div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('invoice-modal')">إلغاء</button>
+      <button class="btn btn-gold" onclick="saveInvoice()">حفظ</button>
+    </div>
+  </div>
+</div>
+
+<!-- Purchase Modal -->
+<div class="modal-overlay" id="purchase-modal">
+  <div class="modal">
+    <h3>فاتورة شراء جديدة</h3>
+    <input type="hidden" id="pur-edit-idx" value="">
+    <div class="form-row">
+      <div class="form-group"><label>اسم المورد</label><input id="pur-supplier"></div>
+      <div class="form-group"><label>الصنف</label><input id="pur-item"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>الكمية</label><input id="pur-qty" type="number"></div>
+      <div class="form-group"><label>سعر الوحدة</label><input id="pur-price" type="number"></div>
+    </div>
+    <div class="form-group"><label>المبلغ المدفوع</label><input id="pur-paid" type="number"></div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('purchase-modal')">إلغاء</button>
+      <button class="btn btn-gold" onclick="savePurchase()">حفظ</button>
+    </div>
+  </div>
+</div>
+
+<!-- Profit Modal -->
+<div class="modal-overlay" id="profit-modal">
+  <div class="modal">
+    <h3 id="profit-modal-title">تفاصيل الربح</h3>
+    <input type="hidden" id="profit-edit-idx" value="">
+    <div class="form-group"><label>رقم الأوردر/العميل</label><input id="pr-order"></div>
+    <div class="form-row">
+      <div class="form-group"><label>إجمالي الإيراد</label><input id="pr-revenue" type="number"></div>
+      <div class="form-group"><label>تكلفة العمالة</label><input id="pr-labor" type="number"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>تكلفة الخامات</label><input id="pr-materials" type="number"></div>
+      <div class="form-group"><label>مصاريف تشغيل</label><input id="pr-ops" type="number"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('profit-modal')">إلغاء</button>
+      <button class="btn btn-gold" onclick="saveProfit()">حفظ</button>
+    </div>
+  </div>
+</div>
+
+<!-- Salary Modal -->
+<div class="modal-overlay" id="salary-modal">
+  <div class="modal">
+    <h3>بيانات العامل</h3>
+    <input type="hidden" id="sal-edit-idx" value="">
+    <div class="form-row">
+      <div class="form-group"><label>كود العامل</label><input id="sal-code" type="number"></div>
+      <div class="form-group"><label>اسم العامل</label><input id="sal-name"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>الراتب الأساسي</label><input id="sal-basic" type="number"></div>
+      <div class="form-group"><label>أيام الغياب</label><input id="sal-absent" type="number" value="0"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>حوافز</label><input id="sal-bonus" type="number" value="0"></div>
+      <div class="form-group"><label>خصومات</label><input id="sal-deduct" type="number" value="0"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>سلف</label><input id="sal-advance" type="number" value="0"></div>
+      <div class="form-group"><label>ساعات سهر</label><input id="sal-overtime" type="number" value="0"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('salary-modal')">إلغاء</button>
+      <button class="btn btn-gold" onclick="saveSalary()">حفظ</button>
+    </div>
+  </div>
+</div>
+
+<!-- Attendance Modal -->
+<div class="modal-overlay" id="attendance-modal">
+  <div class="modal">
+    <h3>تسجيل حضور</h3>
+    <input type="hidden" id="att-edit-idx" value="">
+    <div class="form-row">
+      <div class="form-group"><label>اسم العامل</label><input id="att-name"></div>
+      <div class="form-group"><label>التاريخ</label><input id="att-date" type="date"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>وقت الحضور</label><input id="att-in" type="time"></div>
+      <div class="form-group"><label>وقت الانصراف</label><input id="att-out" type="time"></div>
+    </div>
+    <div class="form-group"><label>ساعات إضافية</label><input id="att-extra" type="number" value="0"></div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('attendance-modal')">إلغاء</button>
+      <button class="btn btn-gold" onclick="saveAttendance()">حفظ</button>
+    </div>
+  </div>
+</div>
+
+<!-- Inventory Modal -->
+<div class="modal-overlay" id="inventory-modal">
+  <div class="modal">
+    <h3>إضافة صنف للمخزن</h3>
+    <input type="hidden" id="inv-item-edit-idx" value="">
+    <div class="form-row">
+      <div class="form-group"><label>كود الصنف</label><input id="inv-code" type="number"></div>
+      <div class="form-group"><label>اسم الصنف</label><input id="inv-name"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>رصيد أول المدة</label><input id="inv-opening" type="number" value="0"></div>
+      <div class="form-group"><label>المشتريات</label><input id="inv-purchased" type="number" value="0"></div>
+    </div>
+    <div class="form-group"><label>المنصرف للإنتاج</label><input id="inv-used" type="number" value="0"></div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('inventory-modal')">إلغاء</button>
+      <button class="btn btn-gold" onclick="saveInventoryItem()">حفظ</button>
+    </div>
+  </div>
+</div>
+
+<!-- BOM Modal -->
+<div class="modal-overlay" id="bom-modal">
+  <div class="modal">
+    <h3>موديل جديد</h3>
+    <input type="hidden" id="bom-edit-idx" value="">
+    <div class="form-row">
+      <div class="form-group"><label>كود الموديل</label><input id="bom-code" type="number"></div>
+      <div class="form-group"><label>اسم الموديل</label><input id="bom-name"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>الخامة الأساسية</label><input id="bom-material"></div>
+      <div class="form-group"><label>الكمية لكل قطعة</label><input id="bom-qty" type="number"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>الوحدة</label><input id="bom-unit" placeholder="متر / كيلو..."></div>
+      <div class="form-group"><label>إكسسوارات</label><input id="bom-acc"></div>
+    </div>
+    <div class="form-group"><label>كمية الإكسسوار</label><input id="bom-acc-qty" type="number"></div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('bom-modal')">إلغاء</button>
+      <button class="btn btn-gold" onclick="saveBOM()">حفظ</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ===== DATA STORE =====
+const KEYS = {
+  orders: 'ghf_orders', stages: 'ghf_stages', clients: 'ghf_clients',
+  invoices: 'ghf_invoices', purchases: 'ghf_purchases', profits: 'ghf_profits',
+  salaries: 'ghf_salaries', attendance: 'ghf_attendance', inventory: 'ghf_inventory',
+  bom: 'ghf_bom', archive: 'ghf_archive'
+};
+
+function load(key) {
+  try { return JSON.parse(localStorage.getItem(KEYS[key])) || []; } catch { return []; }
+}
+function save(key, data) {
+  localStorage.setItem(KEYS[key], JSON.stringify(data));
+}
+
+// Pre-load sample data from the Excel file on first run
+function initSampleData() {
+  if (localStorage.getItem('ghf_initialized')) return;
+
+  save('orders', [
+    { id:1, client:'RIV', model:1, type:'', price:null, qty:null, total:0, date:'', received:null, delivered:null, remaining:0, progress:'', status:'قيد التنفيذ' },
+    { id:2, client:'ZAX', model:1, type:'', price:25, qty:130, total:3250, date:'', received:null, delivered:null, remaining:130, progress:'0', status:'قيد التنفيذ' },
+    { id:3, client:'zax', model:2, type:'', price:70, qty:45, total:3150, date:'', received:null, delivered:null, remaining:45, progress:'', status:'قيد التنفيذ' },
+    { id:4, client:'xy', model:1, type:'', price:20, qty:500, total:10000, date:'2026-04-01', received:500, delivered:500, remaining:0, progress:'', status:'قيد التنفيذ' },
+  ]);
+  save('clients', [
+    { name:'RIV', orders:1, pieces:0, due:0, paid:1600, remaining:-1600, profit:0 },
+    { name:'ZAX', orders:2, pieces:175, due:6400, paid:2000, remaining:4400, profit:0 },
+    { name:'aurex', orders:0, pieces:0, due:0, paid:0, remaining:0, profit:4870 },
+  ]);
+  save('invoices', [
+    { id:1, client:'riv', date:'2026-03-01', order:1, qty:64, price:25, total:1600 },
+  ]);
+  save('stages', [
+    { order:1, stage:'خياطه', total:64, done:64, remaining:0, time:'' },
+    { order:2, stage:'شامل', total:null, done:null, remaining:0, time:'' },
+  ]);
+  save('profits', [
+    { order:'1', revenue:1600, labor:null, materials:null, ops:null, net:1600 },
+  ]);
+  save('salaries', [
+    { code:1, name:'', basic:10000, absent:0, absentDeduct:0, bonus:0, deductions:0, advance:0, overtimeHrs:0, overtimePay:0, net:null },
+    { code:2, name:'', basic:8500, absent:null, absentDeduct:null, bonus:null, deductions:null, advance:null, overtimeHrs:null, overtimePay:null, net:null },
+    { code:3, name:'', basic:5000, absent:null, absentDeduct:null, bonus:null, deductions:null, advance:null, overtimeHrs:null, overtimePay:null, net:null },
+    { code:4, name:'', basic:4000, absent:null, absentDeduct:null, bonus:null, deductions:null, advance:null, overtimeHrs:null, overtimePay:null, net:null },
+    { code:5, name:'', basic:5000, absent:null, absentDeduct:null, bonus:null, deductions:null, advance:null, overtimeHrs:null, overtimePay:null, net:null },
+  ]);
+  save('attendance', [
+    { name:'يوسف', date:'2026-04-01', in:'08:00', out:'15:30', hours:'07:00', extra:null },
+    { name:'صلوحه', date:'2026-04-01', in:'', out:'', hours:'0', extra:null },
+    { name:'محمود', date:'2026-04-01', in:'', out:'', hours:'0', extra:null },
+    { name:'مي', date:'2026-04-01', in:'', out:'', hours:'0', extra:null },
+    { name:'شرين', date:'2026-04-01', in:'', out:'', hours:'0', extra:null },
+  ]);
+  save('inventory', [
+    { code:1, name:'خيط', opening:1, purchased:7, used:2, current:6, status:'✅ جيد' },
+  ]);
+  save('kpis', [
+    { code:1, name:'يوسف حسام', totalHours:0, overtime:0, absent:0, production:null, rating:null },
+    { code:2, name:'صلوحه', totalHours:0, overtime:0, absent:0, production:null, rating:null },
+    { code:3, name:'محمود', totalHours:0, overtime:0, absent:0, production:null, rating:null },
+    { code:4, name:'مي', totalHours:0, overtime:0, absent:0, production:null, rating:null },
+    { code:5, name:'شرين', totalHours:0, overtime:0, absent:0, production:null, rating:null },
+  ]);
+  localStorage.setItem('ghf_initialized', '1');
+}
+
+// ===== NAV =====
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  event.currentTarget.classList.add('active');
+  renderPage(id);
+}
+function renderPage(id) {
+  const renders = {
+    dashboard: renderDashboard, orders: renderOrders, stages: renderStages,
+    clients: renderClients, invoices: renderInvoices, purchases: renderPurchases,
+    profits: renderProfits, salaries: renderSalaries, attendance: renderAttendance,
+    kpis: renderKPIs, inventory: renderInventory, bom: renderBOM, archive: renderArchive
+  };
+  if (renders[id]) renders[id]();
+}
+
+// ===== HELPERS =====
+const fmt = n => (n === null || n === undefined || n === '') ? '-' : Number(n).toLocaleString('ar-EG');
+const fmtDate = d => d ? d.toString().slice(0, 10) : '-';
+function el(id) { return document.getElementById(id); }
+function val(id) { return el(id).value; }
+
+function showToast(msg) {
+  const t = el('toast'); t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+function openModal(id) { el(id).classList.add('open'); }
+function closeModal(id) { el(id).classList.remove('open'); }
+document.querySelectorAll('.modal-overlay').forEach(m => {
+  m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); });
+});
+
+function filterTable(tbodyId, q) {
+  const rows = document.getElementById(tbodyId).querySelectorAll('tr');
+  rows.forEach(r => {
+    r.style.display = r.textContent.toLowerCase().includes(q.toLowerCase()) ? '' : 'none';
+  });
+}
+
+function delRow(key, idx, renderFn) {
+  if (!confirm('هل تريد الحذف؟')) return;
+  const data = load(key); data.splice(idx, 1); save(key, data); renderFn(); showToast('تم الحذف');
+}
+
+// ===== DASHBOARD =====
+function renderDashboard() {
+  el('today-date').textContent = new Date().toLocaleDateString('ar-EG', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+  const orders = load('orders');
+  const clients = load('clients');
+  const inventory = load('inventory');
+  const profits = load('profits');
+
+  const totalOrders = orders.length;
+  const totalRevenue = profits.reduce((s, p) => s + (Number(p.net) || 0), 0);
+  const totalDue = clients.reduce((s, c) => s + (Number(c.remaining) || 0), 0);
+  const lowStock = inventory.filter(i => (i.status || '').includes('منخفض')).length;
+
+  el('dashboard-kpis').innerHTML = `
+    <div class="kpi-card"><div class="kpi-label">إجمالي الأوردرات</div><div class="kpi-value">${totalOrders}</div></div>
+    <div class="kpi-card success"><div class="kpi-label">إجمالي الأرباح</div><div class="kpi-value">${fmt(totalRevenue)}</div><div class="kpi-sub">جنيه</div></div>
+    <div class="kpi-card warning"><div class="kpi-label">المستحقات المتبقية</div><div class="kpi-value">${fmt(totalDue)}</div></div>
+    <div class="kpi-card danger"><div class="kpi-label">أصناف منخفضة</div><div class="kpi-value">${lowStock}</div></div>
+  `;
+
+  const tbody = el('dash-orders-table').querySelector('tbody');
+  tbody.innerHTML = orders.slice(0, 5).map(o => `
+    <tr><td>${o.id}</td><td>${o.client}</td><td>${fmt(o.qty)}</td>
+    <td><span class="badge badge-inprogress">${o.status}</span></td></tr>
+  `).join('') || '<tr><td colspan="4" class="empty">لا توجد أوردرات</td></tr>';
+
+  const alerts = el('inventory-alerts');
+  const low = inventory.filter(i => (i.status || '').includes('منخفض'));
+  alerts.innerHTML = low.length
+    ? low.map(i => `<div class="alert alert-warning">⚠️ ${i.name || 'صنف'} - الرصيد: ${fmt(i.current)}</div>`).join('')
+    : '<div style="color:var(--success);padding:12px">✅ المخزن بحالة جيدة</div>';
+}
+
+// ===== ORDERS =====
+function renderOrders() {
+  const data = load('orders');
+  el('orders-tbody').innerHTML = data.map((o, i) => `
+    <tr>
+      <td class="gold">${o.id}</td><td>${o.client}</td><td>${o.model}</td><td>${o.type || '-'}</td>
+      <td>${fmt(o.price)}</td><td>${fmt(o.qty)}</td><td>${fmt(o.total)}</td>
+      <td>${fmtDate(o.date)}</td><td>${fmt(o.received)}</td><td>${fmt(o.remaining)}</td>
+      <td>${o.progress !== '' && o.progress !== null ? o.progress + '%' : '-'}</td>
+      <td><span class="badge ${o.status === 'مكتمل' ? 'badge-done' : 'badge-inprogress'}">${o.status}</span></td>
+      <td>
+        <button class="btn btn-outline btn-sm" onclick="editOrder(${i})">✏️</button>
+        <button class="btn btn-sm" style="background:var(--dark4);color:var(--text-muted);margin-right:4px" onclick="archiveOrder(${i})">📁</button>
+        <button class="btn btn-danger btn-sm" onclick="delRow('orders', ${i}, renderOrders)">🗑</button>
+      </td>
+    </tr>`).join('') || '<tr><td colspan="13" class="empty"><div class="empty-icon">📋</div>لا توجد أوردرات</td></tr>';
+}
+function saveOrder() {
+  const data = load('orders');
+  const idx = val('order-edit-idx');
+  const qty = Number(val('o-qty')) || 0;
+  const price = Number(val('o-price')) || 0;
+  const received = Number(val('o-received')) || 0;
+  const delivered = Number(val('o-delivered')) || 0;
+  const obj = {
+    id: idx !== '' ? data[Number(idx)].id : (data.length > 0 ? Math.max(...data.map(x => x.id)) + 1 : 1),
+    client: val('o-client'), model: Number(val('o-model')), type: val('o-type'),
+    price, qty, total: qty * price, date: val('o-date'),
+    received, delivered, remaining: qty - delivered,
+    progress: qty ? Math.round((delivered / qty) * 100) : 0,
+    status: val('o-status')
+  };
+  if (idx !== '') data[Number(idx)] = obj; else data.push(obj);
+  save('orders', data); closeModal('order-modal'); renderOrders(); showToast('تم الحفظ ✓');
+  el('order-edit-idx').value = '';
+}
+function editOrder(i) {
+  const o = load('orders')[i];
+  el('order-modal-title').textContent = 'تعديل الأوردر';
+  el('order-edit-idx').value = i;
+  el('o-client').value = o.client; el('o-model').value = o.model; el('o-type').value = o.type || '';
+  el('o-price').value = o.price || ''; el('o-qty').value = o.qty || ''; el('o-date').value = o.date || '';
+  el('o-received').value = o.received || ''; el('o-delivered').value = o.delivered || '';
+  el('o-status').value = o.status; openModal('order-modal');
+}
+function archiveOrder(i) {
+  const orders = load('orders');
+  const archive = load('archive');
+  archive.push(orders[i]);
+  orders.splice(i, 1);
+  save('orders', orders); save('archive', archive);
+  renderOrders(); showToast('تم الأرشفة');
+}
+
+// ===== STAGES =====
+function renderStages() {
+  const data = load('stages');
+  el('stages-tbody').innerHTML = data.map((s, i) => {
+    const pct = s.total ? Math.round(((s.done || 0) / s.total) * 100) : 0;
+    return `<tr>
+      <td class="gold">${s.order}</td><td>${s.stage}</td><td>${fmt(s.total)}</td>
+      <td>${fmt(s.done)}</td><td>${fmt(s.remaining)}</td>
+      <td style="min-width:120px"><div class="progress"><div class="progress-fill" style="width:${pct}%"></div></div><small style="color:var(--text-muted)">${pct}%</small></td>
+      <td><button class="btn btn-outline btn-sm" onclick="editStage(${i})">✏️</button>
+          <button class="btn btn-danger btn-sm" onclick="delRow('stages', ${i}, renderStages)">🗑</button></td>
+    </tr>`;
+  }).join('') || '<tr><td colspan="7" class="empty">لا توجد مراحل</td></tr>';
+}
+function saveStage() {
+  const data = load('stages');
+  const idx = val('stage-edit-idx');
+  const total = Number(val('s-total')) || 0;
+  const done = Number(val('s-done')) || 0;
+  const obj = { order: Number(val('s-order')), stage: val('s-stage'), total, done, remaining: total - done, time: val('s-time') };
+  if (idx !== '') data[Number(idx)] = obj; else data.push(obj);
+  save('stages', data); closeModal('stage-modal'); renderStages(); showToast('تم الحفظ ✓');
+  el('stage-edit-idx').value = '';
+}
+function editStage(i) {
+  const s = load('stages')[i];
+  el('stage-edit-idx').value = i;
+  el('s-order').value = s.order; el('s-stage').value = s.stage;
+  el('s-total').value = s.total; el('s-done').value = s.done; el('s-time').value = s.time || '';
+  openModal('stage-modal');
+}
+
+// ===== CLIENTS =====
+function renderClients() {
+  const data = load('clients');
+  el('clients-tbody').innerHTML = data.map((c, i) => `
+    <tr>
+      <td>${c.name}</td><td>${fmt(c.orders)}</td><td>${fmt(c.pieces)}</td>
+      <td>${fmt(c.due)}</td><td class="success">${fmt(c.paid)}</td>
+      <td class="${Number(c.remaining) > 0 ? 'danger' : 'success'}">${fmt(c.remaining)}</td>
+      <td class="gold">${fmt(c.profit)}</td>
+      <td><button class="btn btn-outline btn-sm" onclick="editClient(${i})">✏️</button>
+          <button class="btn btn-danger btn-sm" onclick="delRow('clients', ${i}, renderClients)">🗑</button></td>
+    </tr>`).join('') || '<tr><td colspan="8" class="empty">لا يوجد عملاء</td></tr>';
+}
+function saveClient() {
+  const data = load('clients');
+  const idx = val('client-edit-idx');
+  // Calc from orders
+  const orders = load('orders');
+  const name = val('c-name');
+  const clientOrders = orders.filter(o => o.client.toLowerCase() === name.toLowerCase());
+  const due = clientOrders.reduce((s, o) => s + (Number(o.total) || 0), 0);
+  const pieces = clientOrders.reduce((s, o) => s + (Number(o.delivered) || 0), 0);
+  const paid = Number(val('c-paid')) || 0;
+  const obj = { name, orders: clientOrders.length, pieces, due, paid, remaining: due - paid, profit: 0 };
+  if (idx !== '') data[Number(idx)] = obj; else data.push(obj);
+  save('clients', data); closeModal('client-modal'); renderClients(); showToast('تم الحفظ ✓');
+  el('client-edit-idx').value = '';
+}
+function editClient(i) {
+  const c = load('clients')[i];
+  el('client-edit-idx').value = i;
+  el('c-name').value = c.name; el('c-paid').value = c.paid;
+  el('client-modal-title').textContent = 'تعديل بيانات العميل';
+  openModal('client-modal');
+}
+
+// ===== INVOICES =====
+function renderInvoices() {
+  const data = load('invoices');
+  el('invoices-tbody').innerHTML = data.map((inv, i) => `
+    <tr>
+      <td class="gold">${inv.id}</td><td>${inv.client}</td><td>${fmtDate(inv.date)}</td>
+      <td>${inv.order}</td><td>${fmt(inv.qty)}</td><td>${fmt(inv.price)}</td>
+      <td class="success">${fmt(inv.total)}</td>
+      <td><button class="btn btn-outline btn-sm" onclick="editInvoice(${i})">✏️</button>
+          <button class="btn btn-danger btn-sm" onclick="delRow('invoices', ${i}, renderInvoices)">🗑</button></td>
+    </tr>`).join('') || '<tr><td colspan="8" class="empty">لا توجد فواتير</td></tr>';
+}
+function saveInvoice() {
+  const data = load('invoices');
+  const idx = val('inv-edit-idx');
+  const qty = Number(val('inv-qty')) || 0, price = Number(val('inv-price')) || 0;
+  const obj = { id: idx !== '' ? data[Number(idx)].id : (data.length + 1), client: val('inv-client'), date: val('inv-date'), order: Number(val('inv-order')), qty, price, total: qty * price };
+  if (idx !== '') data[Number(idx)] = obj; else data.push(obj);
+  save('invoices', data); closeModal('invoice-modal'); renderInvoices(); showToast('تم الحفظ ✓');
+  el('inv-edit-idx').value = '';
+}
+function editInvoice(i) {
+  const inv = load('invoices')[i];
+  el('inv-edit-idx').value = i;
+  el('inv-client').value = inv.client; el('inv-date').value = inv.date || '';
+  el('inv-order').value = inv.order; el('inv-qty').value = inv.qty; el('inv-price').value = inv.price;
+  openModal('invoice-modal');
+}
+
+// ===== PURCHASES =====
+function renderPurchases() {
+  const data = load('purchases');
+  el('purchases-tbody').innerHTML = data.map((p, i) => `
+    <tr>
+      <td class="gold">${i + 1}</td><td>${p.supplier}</td><td>${p.item}</td>
+      <td>${fmt(p.qty)}</td><td>${fmt(p.price)}</td><td>${fmt(p.total)}</td>
+      <td class="success">${fmt(p.paid)}</td><td class="${Number(p.remaining) > 0 ? 'danger' : ''}">${fmt(p.remaining)}</td>
+      <td><button class="btn btn-outline btn-sm" onclick="editPurchase(${i})">✏️</button>
+          <button class="btn btn-danger btn-sm" onclick="delRow('purchases', ${i}, renderPurchases)">🗑</button></td>
+    </tr>`).join('') || '<tr><td colspan="9" class="empty">لا توجد فواتير شراء</td></tr>';
+}
+function savePurchase() {
+  const data = load('purchases');
+  const idx = val('pur-edit-idx');
+  const qty = Number(val('pur-qty')) || 0, price = Number(val('pur-price')) || 0;
+  const paid = Number(val('pur-paid')) || 0;
+  const obj = { supplier: val('pur-supplier'), item: val('pur-item'), qty, price, total: qty * price, paid, remaining: qty * price - paid };
+  if (idx !== '') data[Number(idx)] = obj; else data.push(obj);
+  save('purchases', data); closeModal('purchase-modal'); renderPurchases(); showToast('تم الحفظ ✓');
+  el('pur-edit-idx').value = '';
+}
+function editPurchase(i) {
+  const p = load('purchases')[i];
+  el('pur-edit-idx').value = i;
+  el('pur-supplier').value = p.supplier; el('pur-item').value = p.item;
+  el('pur-qty').value = p.qty; el('pur-price').value = p.price; el('pur-paid').value = p.paid;
+  openModal('purchase-modal');
+}
+
+// ===== PROFITS =====
+function renderProfits() {
+  const data = load('profits');
+  const totalRev = data.reduce((s, p) => s + (Number(p.revenue) || 0), 0);
+  const totalNet = data.reduce((s, p) => s + (Number(p.net) || 0), 0);
+  const totalCost = totalRev - totalNet;
+  el('profit-summary').innerHTML = `
+    <div class="summary-box"><div class="val gold">${fmt(totalRev)}</div><div class="lbl">إجمالي الإيرادات</div></div>
+    <div class="summary-box"><div class="val danger">${fmt(totalCost)}</div><div class="lbl">إجمالي التكاليف</div></div>
+    <div class="summary-box"><div class="val success">${fmt(totalNet)}</div><div class="lbl">صافي الأرباح</div></div>
+  `;
+  el('profits-tbody').innerHTML = data.map((p, i) => `
+    <tr>
+      <td>${p.order}</td><td class="gold">${fmt(p.revenue)}</td><td>${fmt(p.labor)}</td>
+      <td>${fmt(p.materials)}</td><td>${fmt(p.ops)}</td>
+      <td class="success">${fmt(p.net)}</td>
+      <td><button class="btn btn-outline btn-sm" onclick="editProfit(${i})">✏️</button>
+          <button class="btn btn-danger btn-sm" onclick="delRow('profits', ${i}, renderProfits)">🗑</button></td>
+    </tr>`).join('') || '<tr><td colspan="7" class="empty">لا توجد بيانات أرباح</td></tr>';
+}
+function saveProfit() {
+  const data = load('profits');
+  const idx = val('profit-edit-idx');
+  const revenue = Number(val('pr-revenue')) || 0;
+  const labor = Number(val('pr-labor')) || 0;
+  const materials = Number(val('pr-materials')) || 0;
+  const ops = Number(val('pr-ops')) || 0;
+  const obj = { order: val('pr-order'), revenue, labor, materials, ops, net: revenue - labor - materials - ops };
+  if (idx !== '') data[Number(idx)] = obj; else data.push(obj);
+  save('profits', data); closeModal('profit-modal'); renderProfits(); showToast('تم الحفظ ✓');
+  el('profit-edit-idx').value = '';
+}
+function editProfit(i) {
+  const p = load('profits')[i];
+  el('profit-edit-idx').value = i;
+  el('pr-order').value = p.order; el('pr-revenue').value = p.revenue;
+  el('pr-labor').value = p.labor || 0; el('pr-materials').value = p.materials || 0; el('pr-ops').value = p.ops || 0;
+  el('profit-modal-title').textContent = 'تعديل بيانات الربح';
+  openModal('profit-modal');
+}
+
+// ===== SALARIES =====
+function renderSalaries() {
+  const data = load('salaries');
+  el('salaries-tbody').innerHTML = data.map((s, i) => {
+    const basic = Number(s.basic) || 0;
+    const absentDeduct = basic / 30 * (Number(s.absent) || 0);
+    const overtimePay = (basic / 30 / 8) * 1.5 * (Number(s.overtimeHrs) || 0);
+    const net = basic - absentDeduct + (Number(s.bonus) || 0) - (Number(s.deductions) || 0) - (Number(s.advance) || 0) + overtimePay;
+    return `<tr>
+      <td class="gold">${s.code}</td><td>${s.name || '-'}</td><td>${fmt(s.basic)}</td>
+      <td>${s.absent ?? '-'}</td><td>${fmt(absentDeduct.toFixed(0))}</td>
+      <td class="success">${fmt(s.bonus)}</td><td class="danger">${fmt(s.deductions)}</td>
+      <td class="danger">${fmt(s.advance)}</td><td>${fmt(s.overtimeHrs)}</td>
+      <td class="success">${fmt(overtimePay.toFixed(0))}</td>
+      <td class="gold" style="font-weight:700">${fmt(net.toFixed(0))}</td>
+      <td><button class="btn btn-outline btn-sm" onclick="editSalary(${i})">✏️</button>
+          <button class="btn btn-danger btn-sm" onclick="delRow('salaries', ${i}, renderSalaries)">🗑</button></td>
+    </tr>`;
+  }).join('') || '<tr><td colspan="12" class="empty">لا توجد بيانات</td></tr>';
+}
+function saveSalary() {
+  const data = load('salaries');
+  const idx = val('sal-edit-idx');
+  const obj = { code: Number(val('sal-code')), name: val('sal-name'), basic: Number(val('sal-basic')), absent: Number(val('sal-absent')), bonus: Number(val('sal-bonus')), deductions: Number(val('sal-deduct')), advance: Number(val('sal-advance')), overtimeHrs: Number(val('sal-overtime')) };
+  if (idx !== '') data[Number(idx)] = obj; else data.push(obj);
+  save('salaries', data); closeModal('salary-modal'); renderSalaries(); showToast('تم الحفظ ✓');
+  el('sal-edit-idx').value = '';
+}
+function editSalary(i) {
+  const s = load('salaries')[i];
+  el('sal-edit-idx').value = i;
+  el('sal-code').value = s.code; el('sal-name').value = s.name || ''; el('sal-basic').value = s.basic;
+  el('sal-absent').value = s.absent || 0; el('sal-bonus').value = s.bonus || 0;
+  el('sal-deduct').value = s.deductions || 0; el('sal-advance').value = s.advance || 0; el('sal-overtime').value = s.overtimeHrs || 0;
+  openModal('salary-modal');
+}
+
+// ===== ATTENDANCE =====
+function renderAttendance() {
+  const data = load('attendance');
+  el('attendance-tbody').innerHTML = data.map((a, i) => `
+    <tr>
+      <td>${a.name}</td><td>${fmtDate(a.date)}</td><td>${a.in || '-'}</td><td>${a.out || '-'}</td>
+      <td>${a.hours || '-'}</td><td>${fmt(a.extra)}</td>
+      <td><button class="btn btn-outline btn-sm" onclick="editAttendance(${i})">✏️</button>
+          <button class="btn btn-danger btn-sm" onclick="delRow('attendance', ${i}, renderAttendance)">🗑</button></td>
+    </tr>`).join('') || '<tr><td colspan="7" class="empty">لا توجد بيانات</td></tr>';
+}
+function saveAttendance() {
+  const data = load('attendance');
+  const idx = val('att-edit-idx');
+  const inTime = val('att-in'), outTime = val('att-out');
+  let hours = '';
+  if (inTime && outTime) {
+    const [ih, im] = inTime.split(':').map(Number);
+    const [oh, om] = outTime.split(':').map(Number);
+    const diff = (oh * 60 + om) - (ih * 60 + im);
+    hours = diff > 0 ? `${Math.floor(diff/60).toString().padStart(2,'0')}:${(diff%60).toString().padStart(2,'0')}` : '0';
+  }
+  const obj = { name: val('att-name'), date: val('att-date'), in: inTime, out: outTime, hours, extra: Number(val('att-extra')) || 0 };
+  if (idx !== '') data[Number(idx)] = obj; else data.push(obj);
+  save('attendance', data); closeModal('attendance-modal'); renderAttendance(); showToast('تم الحفظ ✓');
+  el('att-edit-idx').value = '';
+}
+function editAttendance(i) {
+  const a = load('attendance')[i];
+  el('att-edit-idx').value = i;
+  el('att-name').value = a.name; el('att-date').value = a.date || '';
+  el('att-in').value = a.in || ''; el('att-out').value = a.out || ''; el('att-extra').value = a.extra || 0;
+  openModal('attendance-modal');
+}
+
+// ===== KPIs =====
+function renderKPIs() {
+  const data = load('kpis') || [];
+  el('kpis-tbody').innerHTML = data.map((k, i) => `
+    <tr>
+      <td class="gold">${k.code}</td><td>${k.name}</td><td>${fmt(k.totalHours)}</td>
+      <td>${fmt(k.overtime)}</td><td class="${k.absent > 0 ? 'danger' : ''}">${fmt(k.absent)}</td>
+      <td>${fmt(k.production)}</td>
+      <td>${k.rating ? `<span class="badge badge-done">${k.rating}</span>` : '-'}</td>
+    </tr>`).join('') || '<tr><td colspan="7" class="empty">لا توجد بيانات KPI</td></tr>';
+}
+
+// ===== INVENTORY =====
+function renderInventory() {
+  const data = load('inventory');
+  el('inventory-tbody').innerHTML = data.map((item, i) => {
+    const current = (Number(item.opening) || 0) + (Number(item.purchased) || 0) - (Number(item.used) || 0);
+    const status = current > 5 ? '✅ جيد' : current > 0 ? '⚠️ منخفض' : '❌ نفد';
+    const badgeCls = status.includes('جيد') ? 'badge-ok' : 'badge-low';
+    return `<tr>
+      <td class="gold">${item.code}</td><td>${item.name}</td><td>${fmt(item.opening)}</td>
+      <td>${fmt(item.purchased)}</td><td>${fmt(item.used)}</td><td>${fmt(current)}</td>
+      <td><span class="badge ${badgeCls}">${status}</span></td>
+      <td><button class="btn btn-outline btn-sm" onclick="editInventory(${i})">✏️</button>
+          <button class="btn btn-danger btn-sm" onclick="delRow('inventory', ${i}, renderInventory)">🗑</button></td>
+    </tr>`;
+  }).join('') || '<tr><td colspan="8" class="empty">المخزن فارغ</td></tr>';
+}
+function saveInventoryItem() {
+  const data = load('inventory');
+  const idx = val('inv-item-edit-idx');
+  const obj = { code: Number(val('inv-code')), name: val('inv-name'), opening: Number(val('inv-opening')), purchased: Number(val('inv-purchased')), used: Number(val('inv-used')) };
+  obj.current = obj.opening + obj.purchased - obj.used;
+  obj.status = obj.current > 5 ? '✅ جيد' : obj.current > 0 ? '⚠️ منخفض' : '❌ نفد';
+  if (idx !== '') data[Number(idx)] = obj; else data.push(obj);
+  save('inventory', data); closeModal('inventory-modal'); renderInventory(); showToast('تم الحفظ ✓');
+  el('inv-item-edit-idx').value = '';
+}
+function editInventory(i) {
+  const item = load('inventory')[i];
+  el('inv-item-edit-idx').value = i;
+  el('inv-code').value = item.code; el('inv-name').value = item.name;
+  el('inv-opening').value = item.opening; el('inv-purchased').value = item.purchased; el('inv-used').value = item.used;
+  openModal('inventory-modal');
+}
+
+// ===== BOM =====
+function renderBOM() {
+  const data = load('bom');
+  el('bom-tbody').innerHTML = data.map((b, i) => `
+    <tr>
+      <td class="gold">${b.code}</td><td>${b.name}</td><td>${b.material}</td>
+      <td>${fmt(b.qty)}</td><td>${b.unit}</td><td>${b.acc}</td><td>${fmt(b.accQty)}</td>
+      <td><button class="btn btn-outline btn-sm" onclick="editBOM(${i})">✏️</button>
+          <button class="btn btn-danger btn-sm" onclick="delRow('bom', ${i}, renderBOM)">🗑</button></td>
+    </tr>`).join('') || '<tr><td colspan="8" class="empty">لا توجد موديلات</td></tr>';
+}
+function saveBOM() {
+  const data = load('bom');
+  const idx = val('bom-edit-idx');
+  const obj = { code: Number(val('bom-code')), name: val('bom-name'), material: val('bom-material'), qty: Number(val('bom-qty')), unit: val('bom-unit'), acc: val('bom-acc'), accQty: Number(val('bom-acc-qty')) };
+  if (idx !== '') data[Number(idx)] = obj; else data.push(obj);
+  save('bom', data); closeModal('bom-modal'); renderBOM(); showToast('تم الحفظ ✓');
+  el('bom-edit-idx').value = '';
+}
+function editBOM(i) {
+  const b = load('bom')[i];
+  el('bom-edit-idx').value = i;
+  el('bom-code').value = b.code; el('bom-name').value = b.name; el('bom-material').value = b.material;
+  el('bom-qty').value = b.qty; el('bom-unit').value = b.unit; el('bom-acc').value = b.acc; el('bom-acc-qty').value = b.accQty;
+  openModal('bom-modal');
+}
+
+// ===== ARCHIVE =====
+function renderArchive() {
+  const data = load('archive');
+  el('archive-tbody').innerHTML = data.map((o, i) => `
+    <tr>
+      <td class="gold">${o.id}</td><td>${o.client}</td><td>${o.model}</td><td>${o.type || '-'}</td>
+      <td>${fmt(o.price)}</td><td>${fmt(o.qty)}</td><td>${fmt(o.total)}</td>
+      <td>${fmtDate(o.date)}</td><td>${fmt(o.received)}</td><td>${fmt(o.delivered)}</td>
+      <td>${fmt(o.remaining)}</td>
+      <td>${o.progress !== '' && o.progress !== null ? o.progress + '%' : '-'}</td>
+      <td><span class="badge badge-inprogress">${o.status}</span></td>
+    </tr>`).join('') || '<tr><td colspan="13" class="empty"><div class="empty-icon">🗂️</div>الأرشيف فارغ</td></tr>';
+}
+
+// ===== INIT =====
+initSampleData();
+renderDashboard();
+</script>
+</body>
+</html>
