@@ -5,7 +5,7 @@
 
 // ── إعداد الـ API ────────────────────────────────────────────
 // ⚠️ بعد نشر الـ Apps Script، ضع الرابط هنا:
-const API_URL = "https://script.google.com/macros/s/AKfycbzEMZXHSDlSSJNz29dp10W0M_39_Syz9fA0L1Glrg-C5hC8_ZrqPsivaskiXBx51rNUbQ/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbyyjiNP36yBecO5_XugMSiudYvBA1tlWmjCnp192eJHlEhWndmwyn_8VIF-c8GEvYvBfw/exec";
 const API_KEY = "GH_FACTORY_2026_X9K2L"; // نفس المفتاح في Code.gs
 
 // ── حالة التطبيق ─────────────────────────────────────────────
